@@ -7,12 +7,14 @@
  *
  * @author Mark story
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
- * Copyright 2008-2010 Mark Story 
- * 
+ * Copyright 2008-2010 Mark Story
+ *
+ * @modifiedby Phillip Whittlesea
+ *
  * 694B The Queensway
  * toronto, ontario
  * M8Y 1K9, Canada
- * 
+ *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  */
@@ -50,8 +52,8 @@ class GeshiHelper extends AppHelper {
     public $defaultLanguage = false;
 
 /**
- * The Attribute use for finding the code Language. 
- * 
+ * The Attribute use for finding the code Language.
+ *
  * Common choices are lang and class
  *
  * @var string
@@ -69,15 +71,15 @@ class GeshiHelper extends AppHelper {
  * Show the Button that can be used with JS to switch to plain text.
  *
  * @var bool
- */    
+ */
     public $showPlainTextButton = true;
 
 /**
  * Highlight a block of HTML containing defined blocks.  Converts blocks from plain text
  * into highlighted code.
- * 
  *
- * @param string $htmlString 
+ *
+ * @param string $htmlString
  * @return void
  * @author Mark Story
  */
@@ -92,11 +94,11 @@ class GeshiHelper extends AppHelper {
             matches[3] = value of lang attribute
             matches[4] = text to be highlighted
             matches[5] = end tag
-        */    
+        */
         $html = preg_replace_callback($pattern, array($this, '_processCodeBlock'), $htmlString);
         return $this->output( $html );
     }
-        
+
 /**
  * Preg Replace Callback
  * Uses matches made earlier runs geshi returns processed code blocks.
@@ -109,18 +111,18 @@ class GeshiHelper extends AppHelper {
         //check language
         $lang = $this->validLang($lang);
         $code = html_entity_decode($code, ENT_QUOTES); //decode text in code block as GeSHi will re-encode it.
-        
+
         if (isset($this->containerMap[$tagName])) {
             $patt = '/' . preg_quote($tagName) . '/';
             $openTag = preg_replace($patt, $this->containerMap[$tagName][0], $openTag);
             $closeTag = preg_replace($patt, $this->containerMap[$tagName][1], $closeTag);
         }
-        
+
         if ($this->showPlainTextButton) {
             $button = '<a href="#null" class="geshi-plain-text">Show Plain Text</a>';
             $openTag = $button . $openTag;
         }
-        
+
         if ((bool)$lang) {
             //get instance or use stored instance
             if ($this->_geshi == null) {
@@ -142,24 +144,51 @@ class GeshiHelper extends AppHelper {
  * @return mixed.
  **/
     protected function validLang( $lang )  {
-        if (in_array($lang, $this->validLanguages)) { 
-            return $lang; 
+        if (in_array($lang, $this->validLanguages)) {
+            return $lang;
         }
         if ($this->defaultLanguage) {
             return $this->defaultLanguage;
         }
         return false;
     }
-    
+
 /**
- * Configure a geshi Instance the way we want it. 
+ * Configure a geshi Instance the way we want it.
  * app/config/geshi.php
  *
  * @return void
  **/
     private function __configureInstance($geshi) {
-        if (file_exists($this->configPath . 'geshi.php')) {
-            include $this->configPath . 'geshi.php';
+        $config = Configure::read('geshi');
+
+        switch ($config['header_type']) {
+            case "div":
+                $geshi->set_header_type(GESHI_HEADER_DIV);
+                break;
+            case "pre":
+                $geshi->set_header_type(GESHI_HEADER_PRE);
+                break;
+            default:
+                $geshi->set_header_type(GESHI_HEADER_NONE);
         }
+
+        // Line numbers to highlight
+        $no = (isset($config['line_numbers'])) ? $config['line_numbers'] : 1;
+        switch ($config['line_number_type']) {
+            case "fancy":
+                $geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS, $no);
+                break;
+            case "normal":
+                $geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS, $no);
+                break;
+            default:
+                $geshi->enable_line_numbers(GESHI_NO_LINE_NUMBERS);
+        }
+
+        // Enable when stylesheets are brought in
+        //$geshi->enable_classes();
+
+        $geshi->set_tab_width((isset($config['set_tab_width'])) ? $config['set_tab_width'] : 4);
     }
-} 
+}
