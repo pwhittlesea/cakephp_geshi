@@ -4,7 +4,8 @@ This plugin provides a simple helper for adding GeSHI syntax highlighting to you
 
 h3. Installation
 
-Either clone the repository or download a package and place it in a @geshi@ directory in one of your plugin paths.  Then download and "GeSHI":http://sourceforge.net/projects/geshi/files/ and place it in one of your @vendors@ folders, in a @geshi@ directory.  This code has been tested with GeSHI 1.0.8.4
+Either clone the repository or download a package and place it in a @geshi@ directory in one of your plugin paths.
+This plugin is configured to work with a submodule checkout out from "git://github.com/mattprice/GeSHi.git" into one of your @vendors@ folders, in a @GeSHi@ directory.
 
 h3. Usage
 

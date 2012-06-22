@@ -18,7 +18,7 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  */
-App::import('Vendor', 'geshi/geshi');
+App::import('Vendor', 'GeSHi', array("file"=>"GeSHi/geshi-1.0.X/src/geshi.php"));
 
 class GeshiHelper extends AppHelper {
 
@@ -72,7 +72,7 @@ class GeshiHelper extends AppHelper {
  *
  * @var bool
  */
-    public $showPlainTextButton = true;
+    public $showPlainTextButton = false;
 
 /**
  * Highlight a block of HTML containing defined blocks.  Converts blocks from plain text
